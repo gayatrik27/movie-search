@@ -3,12 +3,21 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
-// ✅ FIXED fetch (CommonJS compatible)
+// fetch (CommonJS)
 const fetch = require("node-fetch");
 
 const app = express();
+
+// middleware
 app.use(cors());
 app.use(express.json());
+
+
+// ✅ ROOT ROUTE (fixes "Cannot GET /")
+app.get("/", (req, res) => {
+  res.send("Backend is running 🚀");
+});
+
 
 // ✅ MongoDB connection
 mongoose
@@ -16,7 +25,8 @@ mongoose
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log(err));
 
-// ✅ ROUTE
+
+// ✅ SEARCH ROUTE
 app.get("/search", async (req, res) => {
   try {
     const query = req.query.q;
@@ -34,7 +44,8 @@ app.get("/search", async (req, res) => {
   }
 });
 
-// ✅ PORT (important for deploy later)
+
+// ✅ PORT
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
