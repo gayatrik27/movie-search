@@ -1,33 +1,25 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config();
-
 const fetch = require("node-fetch");
+require("dotenv").config();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-/* ✅ ROOT ROUTE (fixes "Cannot GET /") */
+// TEST ROUTE
 app.get("/", (req, res) => {
-  res.send("Movie API is running 🚀");
+  res.send("API is working 🚀");
 });
 
-/* ✅ MongoDB connection */
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
-
-/* ✅ SEARCH ROUTE */
+// SEARCH ROUTE
 app.get("/search", async (req, res) => {
   try {
     const query = req.query.q;
 
     if (!query) {
-      return res.status(400).json({ error: "Query is required" });
+      return res.json({ error: "No search query provided" });
     }
 
     const response = await fetch(
@@ -39,11 +31,10 @@ app.get("/search", async (req, res) => {
     res.json(data);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "Something went wrong" });
+    res.status(500).json({ error: "Server error" });
   }
 });
 
-/* ✅ PORT */
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
