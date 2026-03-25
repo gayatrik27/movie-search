@@ -1,19 +1,22 @@
 const express = require("express");
 const cors = require("cors");
-const fetch = require("node-fetch");
 require("dotenv").config();
+
+// ✅ FIXED fetch (works on Render)
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// TEST ROUTE
+// ✅ TEST ROUTE
 app.get("/", (req, res) => {
   res.send("API is working 🚀");
 });
 
-// SEARCH ROUTE
+// ✅ SEARCH ROUTE
 app.get("/search", async (req, res) => {
   try {
     const query = req.query.q;
@@ -22,10 +25,9 @@ app.get("/search", async (req, res) => {
       return res.json({ error: "No search query provided" });
     }
 
-    const response = await fetch(
-      `https://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&s=${query}`
-    );
+    const url = `https://www.omdbapi.com/?apikey=${process.env.OMDB_API_KEY}&s=${query}`;
 
+    const response = await fetch(url);
     const data = await response.json();
 
     res.json(data);
@@ -35,6 +37,7 @@ app.get("/search", async (req, res) => {
   }
 });
 
+// ✅ PORT FIX (important for Render)
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
